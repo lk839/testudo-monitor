@@ -2,7 +2,7 @@ name: Testudo Seat Monitor
 
 on:
   schedule:
-    - cron: "1,11,21,31,41,51 * * * *"
+    - cron: "2,11,22,32,42,52 * * * *"
   workflow_dispatch:
 
 permissions:
