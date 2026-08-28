@@ -1,377 +1,145 @@
 {
-  "sentinel_course": "BSCI222",
-  "watch": [
-    {
-      "course": "BSCI222",
-      "sections": [
-        "2121",
-        "2122",
-        "2123",
-        "2124",
-        "2125",
-        "2130",
-        "2132",
-        "2141",
-        "2215",
-        "2221",
-        "2251",
-        "2264",
-        "2269"
-      ]
-    },
-    {
-      "course": "BSCI331",
-      "sections": [
-        "0101",
-        "0201"
-      ]
-    },
-    {
-      "course": "PHYS131",
-      "sections": [
-        "0103",
-        "0104",
-        "0105",
-        "0106",
-        "0201",
-        "0202",
-        "0203",
-        "0204",
-        "0205",
-        "0206",
-        "0207",
-        "0208"
-      ]
-    },
-    {
-      "course": "BIOM301",
-      "sections": [
-        "0101",
-        "0102",
-        "0103",
-        "0104",
-        "0105",
-        "0106",
-        "0107"
-      ]
-    },
-    {
-      "course": "STAT400",
-      "sections": [
-        "0111",
-        "0112",
-        "0121",
-        "0122",
-        "0131",
-        "0132",
-        "0221",
-        "0222",
-        "0231",
-        "0232"
-      ]
-    },
-    {
-      "course": "BSCI207",
-      "sections": [
-        "0201"
-      ]
-    },
-    {
-      "course": "COMM107",
-      "sections": [
-        "5801",
-        "6401"
-      ]
-    },
-    {
-      "course": "ENES210",
-      "sections": [
-        "0201",
-        "0301",
-        "0401",
-        "0701",
-        "0801",
-        "0901",
-        "1001"
-      ]
-    },
-    {
-      "course": "CHEM231",
-      "sections": [
-        "5215",
-        "5216",
-        "5217",
-        "5235",
-        "5236",
-        "5237",
-        "5315",
-        "5316",
-        "5317",
-        "5335",
-        "5336",
-        "5337",
-        "5422",
-        "5442",
-        "5443"
-      ]
-    },
-    {
-      "course": "CHEM232",
-      "sections": [
-        "5121",
-        "5122",
-        "5131",
-        "5132",
-        "5133",
-        "5211",
-        "5212",
-        "5213",
-        "5221",
-        "5222",
-        "5231",
-        "5232",
-        "5233",
-        "5321",
-        "5322",
-        "5323",
-        "5331",
-        "5332",
-        "5333",
-        "5411",
-        "5412",
-        "5413",
-        "5421",
-        "5422",
-        "5423",
-        "5431",
-        "5432",
-        "5433",
-        "5521",
-        "5522",
-        "5523",
-        "5531",
-        "5532",
-        "5533"
-      ]
-    },
-    {
-      "course": "ENGL390",
-      "sections": [
-        "0301",
-        "0401",
-        "0501",
-        "1501",
-        "1505"
-      ]
-    },
-    {
-      "course": "ENGL391",
-      "sections": [
-        "0401",
-        "0501",
-        "0601",
-        "0701",
-        "0801",
-        "1101",
-        "1201",
-        "1301",
-        "1302",
-        "1505",
-        "9001",
-        "9002",
-        "9003",
-        "9004",
-        "9005",
-        "9006",
-        "9007"
-      ]
-    },
-    {
-      "course": "ENGL392",
-      "sections": [
-        "1101",
-        "1301",
-        "1401"
-      ]
-    },
-    {
-      "course": "ENGL393",
-      "sections": [
-        "0201",
-        "0303",
-        "0401",
-        "0501",
-        "0601",
-        "0701",
-        "0801",
-        "1101",
-        "1201",
-        "1402",
-        "1502",
-        "1505",
-        "9001"
-      ]
-    },
-    {
-      "course": "ENGL394",
-      "sections": [
-        "0201",
-        "0302",
-        "0401",
-        "0404",
-        "0501",
-        "0601",
-        "0701",
-        "0801",
-        "0802",
-        "1101",
-        "1201",
-        "1301",
-        "1401",
-        "1501",
-        "1505",
-        "1506",
-        "9001",
-        "9002",
-        "9003",
-        "9004",
-        "9005",
-        "9006",
-        "9007",
-        "9008",
-        "9009",
-        "9010",
-        "9011",
-        "9012",
-        "9013",
-        "9014",
-        "9015"
-      ]
-    },
-    {
-      "course": "ENGL395",
-      "sections": [
-        "0201",
-        "0301",
-        "0401",
-        "0501",
-        "0601",
-        "0602",
-        "0801",
-        "1101",
-        "1201",
-        "1301",
-        "1402",
-        "1501",
-        "1502",
-        "1505",
-        "1506"
-      ]
-    },
-    {
-      "course": "ENGL398A",
-      "sections": [
-        "1101"
-      ]
-    },
-    {
-      "course": "ENGL398B",
-      "sections": [
-        "0601",
-        "0701",
-        "0801"
-      ]
-    },
-    {
-      "course": "ENGL398C",
-      "sections": [
-        "*"
-      ]
-    },
-    {
-      "course": "ENGL398E",
-      "sections": [
-        "0801"
-      ]
-    },
-    {
-      "course": "ENGL398L",
-      "sections": [
-        "0301"
-      ]
-    },
-    {
-      "course": "ENGL398N",
-      "sections": [
-        "*"
-      ]
-    },
-    {
-      "course": "ENGL398R",
-      "sections": [
-        "1101",
-        "1102",
-        "1201",
-        "1301",
-        "1401",
-        "1501"
-      ]
-    },
-    {
-      "course": "ENGL398V",
-      "sections": [
-        "*"
-      ]
-    },
-    {
-      "course": "ARCH230",
-      "sections": [
-        "0101"
-      ]
-    },
-    {
-      "course": "AREC280",
-      "sections": [
-        "0101"
-      ]
-    },
-    {
-      "course": "BMGT262",
-      "sections": [
-        "0101"
-      ]
-    },
-    {
-      "course": "BMGT289B",
-      "sections": [
-        "0101"
-      ]
-    },
-    {
-      "course": "BMGT289D",
-      "sections": [
-        "0101",
-        "0201"
-      ]
-    },
-    {
-      "course": "BMGT289E",
-      "sections": [
-        "0101"
-      ]
-    },
-    {
-      "course": "BMGT289I",
-      "sections": [
-        "0101"
-      ]
-    },
-    {
-      "course": "ENES240",
-      "sections": [
-        "0101",
-        "0201"
-      ]
-    }
+  "timezone": "America/New_York",
+  "earliest_start": "09:30",
+  "latest_end": "19:15",
+  "current_sections": {
+    "CHEM231": "5423",
+    "CHEM232": "5223",
+    "BSCI207": "0301",
+    "COMM107": "4001",
+    "ENES210": "0601",
+    "INST155": "0101"
+  },
+  "current_meetings": {
+    "CHEM231": [
+      {
+        "days": [
+          "M",
+          "W",
+          "F"
+        ],
+        "start": "14:00",
+        "end": "14:50"
+      },
+      {
+        "days": [
+          "Tu"
+        ],
+        "start": "11:00",
+        "end": "11:50"
+      }
+    ],
+    "CHEM232": [
+      {
+        "days": [
+          "Tu"
+        ],
+        "start": "12:30",
+        "end": "15:20"
+      }
+    ],
+    "BSCI207": [
+      {
+        "days": [
+          "M",
+          "W",
+          "F"
+        ],
+        "start": "15:00",
+        "end": "15:50"
+      }
+    ],
+    "COMM107": [
+      {
+        "days": [
+          "M",
+          "W",
+          "F"
+        ],
+        "start": "11:00",
+        "end": "11:50"
+      }
+    ],
+    "ENES210": [
+      {
+        "days": [
+          "W"
+        ],
+        "start": "10:00",
+        "end": "10:50"
+      }
+    ],
+    "INST155": []
+  },
+  "priority": {
+    "CHEM231": 100,
+    "CHEM232": 95,
+    "BSCI222": 90,
+    "BSCI207": 85,
+    "BSCI331": 80,
+    "PHYS131": 75,
+    "BIOM301": 70,
+    "FSPW": 65,
+    "STAT400": 60,
+    "COMM107": 55,
+    "GENED_DUAL": 50,
+    "ENES210": 45,
+    "INST155": 40
+  },
+  "course_groups": {
+    "ENGL390": "FSPW",
+    "ENGL391": "FSPW",
+    "ENGL392": "FSPW",
+    "ENGL393": "FSPW",
+    "ENGL394": "FSPW",
+    "ENGL395": "FSPW",
+    "ENGL398A": "FSPW",
+    "ENGL398B": "FSPW",
+    "ENGL398C": "FSPW",
+    "ENGL398E": "FSPW",
+    "ENGL398L": "FSPW",
+    "ENGL398N": "FSPW",
+    "ENGL398R": "FSPW",
+    "ENGL398V": "FSPW",
+    "ARCH230": "GENED_DUAL",
+    "AREC280": "GENED_DUAL",
+    "BMGT262": "GENED_DUAL",
+    "BMGT289B": "GENED_DUAL",
+    "BMGT289D": "GENED_DUAL",
+    "BMGT289E": "GENED_DUAL",
+    "BMGT289I": "GENED_DUAL",
+    "ENES240": "GENED_DUAL"
+  },
+  "replaceable_current": [
+    "CHEM231",
+    "CHEM232",
+    "BSCI207",
+    "COMM107",
+    "ENES210",
+    "INST155"
+  ],
+  "same_slot_replacements": {
+    "GENED_DUAL": [
+      "ENES210"
+    ],
+    "FSPW": []
+  },
+  "notes": [
+    "Hard commute rule: no meeting before 09:30 and no meeting ending after 19:15.",
+    "A seat opening is suppressed if its own meeting times are impossible.",
+    "If it conflicts with current classes, it is alerted only when the conflict involves current classes that are allowed to move and the candidate has enough priority or replaces the same requirement slot.",
+    "This is an actionability filter, not an automatic registration system.",
+    "CHEM231 instructor rule: keep Stocker by default. A non-Stocker section alerts only when the live open-section scan shows it unlocks one course with priority >=75, or two compatible courses each priority >=60 with combined priority >=130. CHEM232 and already-held BSCI207 do not count as justification by themselves."
+  ],
+  "preferred_instructors": {
+    "CHEM231": "Stocker"
+  },
+  "nonpreferred_chem231_single_unlock_min_priority": 75,
+  "nonpreferred_chem231_combo_min_priority": 60,
+  "nonpreferred_chem231_combo_total_priority": 130,
+  "nonpreferred_chem231_exclude_unlock_courses": [
+    "CHEM231",
+    "CHEM232",
+    "BSCI207"
   ]
 }
