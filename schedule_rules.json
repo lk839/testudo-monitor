@@ -128,6 +128,10 @@
     "Hard commute rule: no meeting before 09:30 and no meeting ending after 19:15.",
     "A seat opening is suppressed if its own meeting times are impossible.",
     "If it conflicts with current classes, it is alerted only when the conflict involves current classes that are allowed to move and the candidate has enough priority or replaces the same requirement slot.",
-    "This is an actionability filter, not an automatic registration system."
-  ]
+    "This is an actionability filter, not an automatic registration system.",
+    "CHEM231 instructor preference: Stocker is preferred; routine non-Stocker CHEM231 openings are suppressed."
+  ],
+  "preferred_instructors": {
+    "CHEM231": "Stocker"
+  }
 }
