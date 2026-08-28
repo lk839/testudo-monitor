@@ -119,6 +119,16 @@ def actionability(course,sec,info,rules):
     latest=hm_to_min(rules.get("latest_end","19:15"))
     meetings=info.get("meetings",[])
 
+    # CHEM231 instructor guard: Stocker is preferred.
+    # The current conflict heuristic cannot prove that leaving Stocker creates
+    # a sufficiently valuable multi-course schedule, so routine openings with
+    # another CHEM231 instructor are suppressed.
+    if course=="CHEM231":
+        preferred=rules.get("preferred_instructors",{}).get("CHEM231","").strip().lower()
+        instructor=info.get("instructor","").strip().lower()
+        if preferred and preferred not in instructor:
+            return False,f"non-preferred CHEM231 instructor ({info.get('instructor','unknown')}); keep Stocker unless a major schedule combination is identified"
+
     # Online/no fixed meeting is physically feasible.
     for mt in meetings:
         if mt["start"]<earliest:
