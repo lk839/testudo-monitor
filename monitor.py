@@ -74,18 +74,18 @@ def parse_page(html,course):
     stamp=" ".join(m.group(1).split()) if m else None
     scoped=scope_course_text(text,course)
 
-    # section starts: 4-char id + instructor + Seats(...)
-    # Match a real Testudo section header. Section IDs are exactly
-    # 4 alphanumeric characters and are followed by instructor text and a
-    # Seats(...) block. Exclude tokens that are clearly pieces of meeting text.
+    # Parse only genuine Testudo section headers:
+    #   0301  Phillip Moses  Seats (Total: 19, Open: 0, ...)
+    # Instructor text is deliberately restricted to name-like characters.
+    # This prevents meeting-time fragments such as "30PM", "TUTH", or "HERE"
+    # from being mistaken for section IDs while still supporting IDs such as
+    # 0301, ESG1, FC05, etc.
     sr=re.compile(
       r"(?<![A-Za-z0-9])"
-      r"((?=[A-Za-z0-9]{4}(?![A-Za-z0-9]))"
-      r"(?!\d{1,2}(?:AM|PM)$)"
-      r"(?!HERE$)(?!TUTH$)(?!MWF$)(?!MON$)(?!TUE$)(?!WED$)(?!THU$)(?!FRI$)"
-      r"[A-Za-z0-9]{4})"
+      r"([A-Za-z0-9]{4})"
+      r"(?![A-Za-z0-9])"
       r"\s+"
-      r"(.{2,120}?)"
+      r"([A-Za-zÀ-ÖØ-öø-ÿ.'’\-]+(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ.'’\-]+){0,7})"
       r"\s+Seats\s*\(\s*Total:\s*\d+\s*,\s*Open:\s*(\d+)",
       re.I|re.S)
     starts=list(sr.finditer(scoped)); out={}
@@ -93,11 +93,6 @@ def parse_page(html,course):
                        r"(\d{1,2}:\d{2}(?:am|pm))\s*-\s*(\d{1,2}:\d{2}(?:am|pm))",re.I)
     for i,sm in enumerate(starts):
         sec=sm.group(1).upper(); instr=" ".join(sm.group(2).split()); open_count=int(sm.group(3))
-        # Final guard against false section IDs accidentally formed from
-        # meeting-time text or prose on special-topic ENGL398 pages.
-        bad_tokens={"HERE","TUTH","MWF","MON","TUE","WED","THU","FRI","00AM","30AM","00PM","30PM"}
-        if sec in bad_tokens:
-            continue
         end=starts[i+1].start() if i+1<len(starts) else len(scoped)
         seg=scoped[sm.end():end]
         meetings=[]
