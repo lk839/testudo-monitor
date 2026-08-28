@@ -67,14 +67,22 @@ def parse_page(html):
         stamp = " ".join(m.group(1).split())
 
     sections = {}
+
+    # A real Testudo section ID is exactly 4 alphanumeric characters
+    # (examples: 2121, 0101, ESG1, PDS1, FC05), followed by an instructor
+    # name and then the Seats block.  Requiring this structure avoids
+    # misreading room numbers such as 1101 or times such as 10:00.
     rx = re.compile(
-        r"(?<![A-Za-z0-9])([A-Za-z]{0,2}\d{2,4}|\d{4})(?![A-Za-z0-9])"
-        r".{0,600}?"
-        r"Seats\s*\(\s*Total:\s*\d+\s*,\s*Open:\s*(\d+)",
+        r"(?<![A-Za-z0-9])([A-Za-z0-9]{4})(?![A-Za-z0-9])"
+        r"\s+"
+        r"([A-Za-zÀ-ÖØ-öø-ÿ.'’\- ]{2,100}?)"
+        r"\s+Seats\s*\(\s*Total:\s*\d+\s*,\s*Open:\s*(\d+)",
         re.I | re.S
     )
-    for section, count in rx.findall(text):
+
+    for section, instructor, count in rx.findall(text):
         sections[section.upper()] = int(count)
+
     return stamp, sections
 
 def send_ntfy(course, section, open_now):
@@ -127,7 +135,6 @@ def scan_all(config, state, baseline=False):
     return changed
 
 def due_now(now, meta):
-    # GitHub invokes every 5 minutes. We decide whether this run should contact Testudo.
     md = (now.month, now.day)
     h = now.hour
     daytime = 7 <= h < 23
@@ -167,7 +174,6 @@ def main():
         print("Not due. Exiting without contacting Testudo.")
         return 0
 
-    # Optional conservative pause flag after access-control errors
     blocked_until = float(meta.get("blocked_until_epoch", 0))
     if now.timestamp() < blocked_until:
         print("Conservative pause still active. Exiting.")
@@ -192,7 +198,6 @@ def main():
             if changed:
                 save_json(STATE_PATH, state)
         elif stamp is None:
-            # Conservative fallback: one full scan every 60 min if timestamp parsing fails
             last_full = float(meta.get("last_full_scan_epoch", 0))
             if now.timestamp() - last_full >= 3600:
                 print("No timestamp found; conservative fallback full scan.")
@@ -216,10 +221,8 @@ def main():
         meta["last_check_epoch"] = now.timestamp()
 
         if text.startswith("ACCESS_CONTROL_"):
-            # 2-hour pause on 403/429
             meta["blocked_until_epoch"] = now.timestamp() + 7200
         else:
-            # 30-minute pause for server issues
             meta["blocked_until_epoch"] = now.timestamp() + 1800
 
         save_json(META_PATH, meta)
