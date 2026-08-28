@@ -46,11 +46,29 @@ def course_url(course):
     return f"https://app.testudo.umd.edu/soc/{TERM}/{dept}/{course}"
 
 def get_page(url):
-    r = SESSION.get(url, timeout=REQUEST_TIMEOUT)
+    headers = {
+        "Cache-Control": "no-cache, no-store, max-age=0",
+        "Pragma": "no-cache",
+    }
+
+    # Unique query parameter prevents an old cached Testudo page
+    # from being reused by an intermediate cache/CDN.
+    params = {
+        "_fresh": str(int(time.time()))
+    }
+
+    r = SESSION.get(
+        url,
+        params=params,
+        headers=headers,
+        timeout=REQUEST_TIMEOUT
+    )
+
     if r.status_code in (403, 429):
         raise RuntimeError(f"ACCESS_CONTROL_{r.status_code}")
     if 500 <= r.status_code <= 599:
         raise RuntimeError(f"SERVER_{r.status_code}")
+
     r.raise_for_status()
     return r.text
 
