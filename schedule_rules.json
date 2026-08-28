@@ -1,0 +1,133 @@
+{
+  "timezone": "America/New_York",
+  "earliest_start": "09:30",
+  "latest_end": "19:15",
+  "current_sections": {
+    "CHEM231": "5423",
+    "CHEM232": "5223",
+    "BSCI207": "0301",
+    "COMM107": "4001",
+    "ENES210": "0601",
+    "INST155": "0101"
+  },
+  "current_meetings": {
+    "CHEM231": [
+      {
+        "days": [
+          "M",
+          "W",
+          "F"
+        ],
+        "start": "14:00",
+        "end": "14:50"
+      },
+      {
+        "days": [
+          "Tu"
+        ],
+        "start": "11:00",
+        "end": "11:50"
+      }
+    ],
+    "CHEM232": [
+      {
+        "days": [
+          "Tu"
+        ],
+        "start": "12:30",
+        "end": "15:20"
+      }
+    ],
+    "BSCI207": [
+      {
+        "days": [
+          "M",
+          "W",
+          "F"
+        ],
+        "start": "15:00",
+        "end": "15:50"
+      }
+    ],
+    "COMM107": [
+      {
+        "days": [
+          "M",
+          "W",
+          "F"
+        ],
+        "start": "11:00",
+        "end": "11:50"
+      }
+    ],
+    "ENES210": [
+      {
+        "days": [
+          "W"
+        ],
+        "start": "10:00",
+        "end": "10:50"
+      }
+    ],
+    "INST155": []
+  },
+  "priority": {
+    "CHEM231": 100,
+    "CHEM232": 95,
+    "BSCI222": 90,
+    "BSCI207": 85,
+    "BSCI331": 80,
+    "PHYS131": 75,
+    "BIOM301": 70,
+    "FSPW": 65,
+    "STAT400": 60,
+    "COMM107": 55,
+    "GENED_DUAL": 50,
+    "ENES210": 45,
+    "INST155": 40
+  },
+  "course_groups": {
+    "ENGL390": "FSPW",
+    "ENGL391": "FSPW",
+    "ENGL392": "FSPW",
+    "ENGL393": "FSPW",
+    "ENGL394": "FSPW",
+    "ENGL395": "FSPW",
+    "ENGL398A": "FSPW",
+    "ENGL398B": "FSPW",
+    "ENGL398C": "FSPW",
+    "ENGL398E": "FSPW",
+    "ENGL398L": "FSPW",
+    "ENGL398N": "FSPW",
+    "ENGL398R": "FSPW",
+    "ENGL398V": "FSPW",
+    "ARCH230": "GENED_DUAL",
+    "AREC280": "GENED_DUAL",
+    "BMGT262": "GENED_DUAL",
+    "BMGT289B": "GENED_DUAL",
+    "BMGT289D": "GENED_DUAL",
+    "BMGT289E": "GENED_DUAL",
+    "BMGT289I": "GENED_DUAL",
+    "ENES240": "GENED_DUAL"
+  },
+  "replaceable_current": [
+    "CHEM231",
+    "CHEM232",
+    "BSCI207",
+    "COMM107",
+    "ENES210",
+    "INST155"
+  ],
+  "same_slot_replacements": {
+    "GENED_DUAL": [
+      "ENES210"
+    ],
+    "FSPW": []
+  },
+  "notes": [
+    "Hard commute rule: no meeting before 09:30 and no meeting ending after 19:15.",
+    "A seat opening is suppressed if its own meeting times are impossible.",
+    "If it conflicts with current classes, it is alerted only when the conflict involves current classes that are allowed to move and the candidate has enough priority or replaces the same requirement slot.",
+    "This is an actionability filter, not an automatic registration system."
+  ]
+}
