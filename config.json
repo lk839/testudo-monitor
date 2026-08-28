@@ -185,19 +185,13 @@
         "*"
       ]
     },
-    {"course": "ARCH230", "sections": ["*"]},
-{"course": "AREC280", "sections": ["*"]},
-{"course": "BMGT207", "sections": ["*"]},
-{"course": "BMGT262", "sections": ["*"]},
-{"course": "BMGT289B", "sections": ["*"]},
-{"course": "BMGT289D", "sections": ["*"]},
-{"course": "BMGT289I", "sections": ["*"]},
-{"course": "ENES140", "sections": ["*"]},
-{"course": "ENES200", "sections": ["*"]},
-{"course": "ENES240", "sections": ["*"]},
-{"course": "ENES256", "sections": ["*"]},
-{"course": "PLCY214", "sections": ["*"]},
-{"course": "PLCY240", "sections": ["*"]},
-{"course": "PLCY380", "sections": ["*"]}
+   {"course": "ARCH230", "sections": ["0101"]},
+{"course": "AREC280", "sections": ["0101"]},
+{"course": "BMGT262", "sections": ["0101"]},
+{"course": "BMGT289B", "sections": ["0101"]},
+{"course": "BMGT289D", "sections": ["0101", "0201"]},
+{"course": "BMGT289E", "sections": ["0101"]},
+{"course": "BMGT289I", "sections": ["0101"]},
+{"course": "ENES240", "sections": ["0101", "0201"]}
   ]
 }
