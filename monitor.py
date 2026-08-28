@@ -114,20 +114,130 @@ def overlaps(a,b):
 def group_for(course,rules): return rules.get("course_groups",{}).get(course,course)
 def priority_for(course,rules): return rules.get("priority",{}).get(group_for(course,rules),0)
 
-def actionability(course,sec,info,rules):
+def physically_feasible(info,rules):
+    earliest=hm_to_min(rules.get("earliest_start","09:30"))
+    latest=hm_to_min(rules.get("latest_end","19:15"))
+    for mt in info.get("meetings",[]):
+        if mt["start"]<earliest or mt["end"]>latest:
+            return False
+    return True
+
+def current_conflicts_for(info,rules,skip_courses=None):
+    skip=set(skip_courses or [])
+    conflicts=[]
+    meetings=info.get("meetings",[])
+    for cur,curmts in rules.get("current_meetings",{}).items():
+        if cur in skip:
+            continue
+        for cmt in curmts:
+            cm={"days":cmt["days"],"start":hm_to_min(cmt["start"]),"end":hm_to_min(cmt["end"])}
+            if any(overlaps(mt,cm) for mt in meetings):
+                conflicts.append(cur)
+                break
+    return sorted(set(conflicts))
+
+def meetings_conflict(info_a,info_b):
+    return any(overlaps(a,b) for a in info_a.get("meetings",[]) for b in info_b.get("meetings",[]))
+
+def nonpreferred_chem231_value(sec,info,rules,catalog):
+    """
+    Decide whether leaving Stocker is justified by live, currently-open options.
+
+    A non-Stocker CHEM231 section is worth alerting only if it *actually unlocks*
+    an open course that Stocker's current CHEM231 meetings block, or a strong
+    two-course combination. Merely moving CHEM232/COMM107/ENES210 is not enough.
+    """
+    preferred=rules.get("preferred_instructors",{}).get("CHEM231","").strip().lower()
+    instructor=info.get("instructor","").strip().lower()
+    if not preferred or preferred in instructor:
+        return True,None
+
+    current_chem={"meetings":[]}
+    for mt in rules.get("current_meetings",{}).get("CHEM231",[]):
+        current_chem["meetings"].append({
+            "days":mt["days"],
+            "start":hm_to_min(mt["start"]),
+            "end":hm_to_min(mt["end"])
+        })
+
+    single_min=int(rules.get("nonpreferred_chem231_single_unlock_min_priority",75))
+    combo_min=int(rules.get("nonpreferred_chem231_combo_min_priority",60))
+    combo_total=int(rules.get("nonpreferred_chem231_combo_total_priority",130))
+    excluded=set(rules.get("nonpreferred_chem231_exclude_unlock_courses",
+                           ["CHEM231","CHEM232","BSCI207"]))
+
+    candidates=[]
+    movable=set(rules.get("replaceable_current",[]))
+
+    for target_course,sections in catalog.items():
+        if target_course in excluded:
+            continue
+        tp=priority_for(target_course,rules)
+        if tp<combo_min:
+            continue
+
+        for target_sec,target_info in sections.items():
+            if target_info.get("open",0)<=0:
+                continue
+            if not physically_feasible(target_info,rules):
+                continue
+
+            # This course must be something Stocker blocks but the new CHEM231 does not.
+            if not meetings_conflict(target_info,current_chem):
+                continue
+            if meetings_conflict(target_info,info):
+                continue
+
+            # It must also be able to fit after moving only lower-priority,
+            # explicitly replaceable current courses.
+            conflicts=current_conflicts_for(target_info,rules,skip_courses={"CHEM231",target_course})
+            if any(c not in movable for c in conflicts):
+                continue
+            if any(priority_for(c,rules)>=tp for c in conflicts):
+                continue
+
+            candidates.append((tp,target_course,target_sec,target_info,conflicts))
+
+    # One major live unlock is enough.
+    major=[x for x in candidates if x[0]>=single_min]
+    if major:
+        major.sort(reverse=True,key=lambda x:x[0])
+        tp,c,s,_,conf=major[0]
+        extra=f"; {','.join(conf)} would move" if conf else ""
+        return True,f"worth changing CHEM231 instructor: unlocks open {c}-{s}{extra}"
+
+    # Or two meaningful live unlocks that can coexist with each other.
+    for i,a in enumerate(candidates):
+        for b in candidates[i+1:]:
+            if a[1]==b[1]:
+                continue
+            if a[0]+b[0] < combo_total:
+                continue
+            if meetings_conflict(a[3],b[3]):
+                continue
+            return True,(f"worth changing CHEM231 instructor: unlocks open "
+                         f"{a[1]}-{a[2]} + {b[1]}-{b[2]}")
+
+    return False,(f"non-preferred CHEM231 instructor ({info.get('instructor','unknown')}); "
+                  "no sufficiently valuable open course combination is unlocked")
+
+def actionability(course,sec,info,rules,catalog=None):
     earliest=hm_to_min(rules.get("earliest_start","09:30"))
     latest=hm_to_min(rules.get("latest_end","19:15"))
     meetings=info.get("meetings",[])
 
-    # CHEM231 instructor guard: Stocker is preferred.
-    # The current conflict heuristic cannot prove that leaving Stocker creates
-    # a sufficiently valuable multi-course schedule, so routine openings with
-    # another CHEM231 instructor are suppressed.
-    if course=="CHEM231":
-        preferred=rules.get("preferred_instructors",{}).get("CHEM231","").strip().lower()
-        instructor=info.get("instructor","").strip().lower()
-        if preferred and preferred not in instructor:
-            return False,f"non-preferred CHEM231 instructor ({info.get('instructor','unknown')}); keep Stocker unless a major schedule combination is identified"
+    # For CHEM231, Stocker remains the default. Another instructor is surfaced
+    # only when this live scan shows that switching actually unlocks enough value.
+    if course=="CHEM231" and catalog is not None:
+        worth,reason=nonpreferred_chem231_value(sec,info,rules,catalog)
+        if not worth:
+            return False,reason
+        if reason:
+            chem231_override_reason=reason
+        else:
+            chem231_override_reason=None
+    else:
+        chem231_override_reason=None
 
     # Online/no fixed meeting is physically feasible.
     for mt in meetings:
@@ -147,7 +257,7 @@ def actionability(course,sec,info,rules):
 
     conflicts=sorted(set(conflicts))
     if not conflicts:
-        return True,"fits current schedule"
+        return True,chem231_override_reason or "fits current schedule"
 
     movable=set(rules.get("replaceable_current",[]))
     immovable=[c for c in conflicts if c not in movable]
@@ -158,16 +268,16 @@ def actionability(course,sec,info,rules):
     grp=group_for(course,rules)
     same=set(rules.get("same_slot_replacements",{}).get(grp,[]))
     if set(conflicts).issubset(same) and conflicts:
-        return True,"can replace "+",".join(conflicts)
+        return True,chem231_override_reason or ("can replace "+",".join(conflicts))
 
     candp=priority_for(course,rules)
     conflictp=max((priority_for(c,rules) for c in conflicts),default=0)
     if candp>conflictp:
-        return True,"higher-priority option if "+",".join(conflicts)+" moves"
+        return True,chem231_override_reason or ("higher-priority option if "+",".join(conflicts)+" moves")
 
     # Alternate section of an already held course is still potentially useful.
     if course in rules.get("current_sections",{}):
-        return True,"alternate section may unlock a better combination"
+        return True,chem231_override_reason or "alternate section may unlock a better combination"
 
     return False,"only works by displacing equal/higher-priority "+",".join(conflicts)
 
@@ -186,31 +296,44 @@ def sections_to_check(item,found):
 
 def scan_all(config,state,rules,baseline=False):
     changed=False
+    catalog={}
+
+    # First pass: fetch and parse every watched course exactly once.
+    # This does not increase the number of Testudo requests; it only lets the
+    # actionability logic see all currently-open sections before deciding alerts.
     for i,item in enumerate(config["watch"]):
         course=item["course"].upper()
         _,found=parse_page(get_page(course_url(course)),course)
         if not found:
-            print(f"WARNING: no sections parsed for {course}",file=sys.stderr); continue
+            print(f"WARNING: no sections parsed for {course}",file=sys.stderr)
+        catalog[course]=found
+        if i<len(config["watch"])-1:
+            time.sleep(random.uniform(3,5))
+
+    # Second pass: evaluate transitions using the complete live catalog.
+    for item in config["watch"]:
+        course=item["course"].upper()
+        found=catalog.get(course,{})
+        if not found:
+            continue
         for sec in sections_to_check(item,found):
             key=f"{course}-{sec}"; info=found[sec]; open_now=info["open"]>0
             old=state.get(key)
             if old is None:
-                ok,why=actionability(course,sec,info,rules)
+                ok,why=actionability(course,sec,info,rules,catalog)
                 print(f"BASELINE {key}: {'OPEN' if open_now else 'CLOSED'} | actionable={ok} | {why}")
                 state[key]=open_now; changed=True
             elif bool(old)!=open_now:
                 if open_now:
-                    ok,why=actionability(course,sec,info,rules)
+                    ok,why=actionability(course,sec,info,rules,catalog)
                     if ok and not baseline:
                         send_ntfy(course,sec,why)
                         print(f"ALERT {key}: OPEN | {why}")
                     else:
                         print(f"SUPPRESSED {key}: OPEN | {why}")
                 else:
-                    # Closing notices are only useful for sections that were previously actionable.
                     print(f"STATE {key}: CLOSED")
                 state[key]=open_now; changed=True
-        if i<len(config["watch"])-1: time.sleep(random.uniform(3,5))
     return changed
 
 def due_now(now,meta):
