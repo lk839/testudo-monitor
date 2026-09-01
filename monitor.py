@@ -276,46 +276,75 @@ def sections_to_check(item,found):
     chosen=sorted(found) if "*" in wanted else wanted
     return [s for s in chosen if s not in excluded and s in found]
 
-def scan_all(config,state,rules,baseline=False):
+def recommendation_signature(best):
+    if not best:
+        return None
+    # Stable identity of the recommended complete schedule.
+    return "|".join(sorted(f"{c}-{s}" for c,s,_ in best))
+
+def scan_all(config,state,rules,meta,baseline=False):
     changed=False;catalog={}
     for i,item in enumerate(config["watch"]):
         course=item["course"].upper()
         _,found=parse_page(get_page(course_url(course)),course)
-        # IMPORTANT: optimizer may only use sections explicitly allowed by config.json.
+        # Optimizer may use only sections explicitly allowed by config.json.
         allowed=sections_to_check(item,found)
         found={sec:found[sec] for sec in allowed}
         catalog[course]=found
-        if not found:print(f"WARNING: no sections parsed for {course}",file=sys.stderr)
+        if not found:print(f"WARNING: no allowed sections parsed for {course}",file=sys.stderr)
         if i<len(config["watch"])-1:time.sleep(random.uniform(3,5))
 
     best,base_score,kind=best_schedule(catalog,rules)
     best_score=schedule_score(best,rules) if best else float("-inf")
     improvement=best_score-base_score if best else float("-inf")
     threshold=threshold_for(kind,best,rules) if best else float("inf")
+    qualifies=best is not None and improvement>=threshold
+    signature=recommendation_signature(best) if qualifies else None
+    previous_signature=meta.get("last_actionable_recommendation")
+
     print(f"Best live schedule improvement: {improvement:.2f}; threshold={threshold:.2f}; kind={kind}")
     if best:print(describe_change(best,rules))
 
+    # Keep seat-state history for diagnostics, but notification no longer depends on
+    # CLOSED -> OPEN. This means the user does not have to manually check Testudo.
     for item in config["watch"]:
         course=item["course"].upper();found=catalog.get(course,{})
         for sec in sections_to_check(item,found):
-            key=f"{course}-{sec}";info=found[sec];open_now=info["open"]>0;old=state.get(key)
+            key=f"{course}-{sec}";open_now=found[sec]["open"]>0;old=state.get(key)
             if old is None:
                 print(f"BASELINE {key}: {'OPEN' if open_now else 'CLOSED'}")
                 state[key]=open_now;changed=True
             elif bool(old)!=open_now:
-                if open_now:
-                    is_part=best is not None and newly_open_course_section(course,sec,best)
-                    if is_part and improvement>=threshold and not baseline:
-                        reason=f"{describe_change(best,rules)}; score improvement {improvement:.2f}"
-                        send_ntfy(course,sec,info,reason,best)
-                        print(f"ALERT {key}: {reason}")
-                    else:
-                        why="not part of a materially better exact-16-credit schedule"
-                        if group_for(course,rules)=="FSOC" and not fsoc_allowed(info,rules):
-                            why=f"FSOC instructor not vetted as clearly easier than {rules.get('fsoc_workload_benchmark')}"
-                        print(f"SUPPRESSED {key}: {why}")
-                else:print(f"STATE {key}: CLOSED")
+                print(f"STATE {key}: {'OPEN' if open_now else 'CLOSED'}")
                 state[key]=open_now;changed=True
+
+    if qualifies:
+        if signature != previous_signature:
+            # Alert on the best actionable schedule even if its key seat was already
+            # open at baseline. Suppress repeats until the recommendation changes.
+            newmap={c:(s,i) for c,s,i in best}
+            current=rules.get("current_sections",{})
+            trigger=None
+            for c,(s,i) in newmap.items():
+                if c not in current or current.get(c)!=s:
+                    trigger=(c,s,i);break
+            if trigger is None:
+                trigger=best[0]
+            c,s,i=trigger
+            reason=f"{describe_change(best,rules)}; score improvement {improvement:.2f}"
+            if not baseline:
+                send_ntfy(c,s,i,reason,best)
+                print(f"ALERT recommendation changed: {signature}")
+            else:
+                print(f"BASELINE actionable recommendation recorded without alert: {signature}")
+            meta["last_actionable_recommendation"]=signature
+        else:
+            print("Actionable recommendation unchanged. No repeat ntfy.")
+    else:
+        if previous_signature:
+            print("No qualifying improvement now; clearing prior recommendation so a future return can alert.")
+        meta.pop("last_actionable_recommendation",None)
+
     return changed
 
 def due_now(now,meta):
@@ -369,17 +398,17 @@ def main():
 
         if first:
             print("First run: establishing baseline.")
-            scan_all(config,state,rules,baseline=True);save_json(STATE_PATH,state)
+            scan_all(config,state,rules,meta,baseline=True);save_json(STATE_PATH,state)
         elif changed_sentinels:
             print("Snapshot changed on: "+", ".join(changed_sentinels)+". Running smart full scan.")
-            if scan_all(config,state,rules,baseline=False):save_json(STATE_PATH,state)
+            if scan_all(config,state,rules,meta,baseline=False):save_json(STATE_PATH,state)
         elif new_known_sentinels:
             print("New sentinel timestamp baseline recorded for: "+", ".join(new_known_sentinels))
         elif all(stamp is None for stamp in current_stamps.values()):
             last_full=float(meta.get("last_full_scan_epoch",0))
             if now.timestamp()-last_full>=3600:
                 print("No sentinel timestamp found; conservative fallback full scan.")
-                if scan_all(config,state,rules,baseline=False):save_json(STATE_PATH,state)
+                if scan_all(config,state,rules,meta,baseline=False):save_json(STATE_PATH,state)
                 meta["last_full_scan_epoch"]=now.timestamp()
         else:
             print("All sentinel snapshots unchanged. No full scan.")
