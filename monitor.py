@@ -396,9 +396,14 @@ def main():
             if stamp and not last_stamps.get(c)
         ]
 
+        manual_run=os.getenv("GITHUB_EVENT_NAME","").strip()=="workflow_dispatch"
+
         if first:
             print("First run: establishing baseline.")
             scan_all(config,state,rules,meta,baseline=True);save_json(STATE_PATH,state)
+        elif manual_run:
+            print("Manual workflow run detected. Running full optimizer scan now.")
+            if scan_all(config,state,rules,meta,baseline=False):save_json(STATE_PATH,state)
         elif changed_sentinels:
             print("Snapshot changed on: "+", ".join(changed_sentinels)+". Running smart full scan.")
             if scan_all(config,state,rules,meta,baseline=False):save_json(STATE_PATH,state)
