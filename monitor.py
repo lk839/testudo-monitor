@@ -396,9 +396,14 @@ def main():
             if stamp and not last_stamps.get(c)
         ]
 
+        force_full_scan=os.getenv("FORCE_FULL_SCAN","false").strip().lower() in ("1","true","yes","on")
+
         if first:
             print("First run: establishing baseline.")
             scan_all(config,state,rules,meta,baseline=True);save_json(STATE_PATH,state)
+        elif force_full_scan:
+            print("FORCE_FULL_SCAN enabled. Running full optimizer scan now.")
+            if scan_all(config,state,rules,meta,baseline=False):save_json(STATE_PATH,state)
         elif changed_sentinels:
             print("Snapshot changed on: "+", ".join(changed_sentinels)+". Running smart full scan.")
             if scan_all(config,state,rules,meta,baseline=False):save_json(STATE_PATH,state)
