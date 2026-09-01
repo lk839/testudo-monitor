@@ -336,25 +336,53 @@ def main():
     if not due:print("Not due. Exiting without contacting Testudo.");return 0
     if now.timestamp()<float(meta.get("blocked_until_epoch",0)):
         print("Conservative pause still active. Exiting.");return 0
-    sentinel=config.get("sentinel_course","BSCI331").upper()
+    sentinels=[c.upper() for c in config.get("sentinel_courses",
+                 [config.get("sentinel_course","BSCI331")])]
     try:
-        stamp,_=parse_page(get_page(course_url(sentinel)),sentinel)
-        print(f"Sentinel snapshot: {stamp}")
-        last_stamp=meta.get("last_snapshot");first=not bool(state)
+        current_stamps={}
+        for idx,sentinel in enumerate(sentinels):
+            stamp,_=parse_page(get_page(course_url(sentinel)),sentinel)
+            current_stamps[sentinel]=stamp
+            print(f"Sentinel {sentinel} snapshot: {stamp}")
+            if idx<len(sentinels)-1:
+                time.sleep(random.uniform(2,4))
+
+        last_stamps=meta.get("last_snapshots",{})
+        if not isinstance(last_stamps,dict):
+            last_stamps={}
+        old_single=meta.get("last_snapshot")
+        if old_single and not last_stamps and sentinels:
+            last_stamps[sentinels[0]]=old_single
+
+        first=not bool(state)
+        changed_sentinels=[
+            c for c,stamp in current_stamps.items()
+            if stamp and last_stamps.get(c) and stamp!=last_stamps.get(c)
+        ]
+        new_known_sentinels=[
+            c for c,stamp in current_stamps.items()
+            if stamp and not last_stamps.get(c)
+        ]
+
         if first:
             print("First run: establishing baseline.")
             scan_all(config,state,rules,baseline=True);save_json(STATE_PATH,state)
-        elif stamp and last_stamp and stamp!=last_stamp:
-            print("Snapshot changed. Running smart full scan.")
+        elif changed_sentinels:
+            print("Snapshot changed on: "+", ".join(changed_sentinels)+". Running smart full scan.")
             if scan_all(config,state,rules,baseline=False):save_json(STATE_PATH,state)
-        elif stamp is None:
+        elif new_known_sentinels:
+            print("New sentinel timestamp baseline recorded for: "+", ".join(new_known_sentinels))
+        elif all(stamp is None for stamp in current_stamps.values()):
             last_full=float(meta.get("last_full_scan_epoch",0))
             if now.timestamp()-last_full>=3600:
-                print("No timestamp found; conservative fallback full scan.")
+                print("No sentinel timestamp found; conservative fallback full scan.")
                 if scan_all(config,state,rules,baseline=False):save_json(STATE_PATH,state)
                 meta["last_full_scan_epoch"]=now.timestamp()
-        else:print("Snapshot unchanged. No full scan.")
-        if stamp:meta["last_snapshot"]=stamp
+        else:
+            print("All sentinel snapshots unchanged. No full scan.")
+
+        meta["last_snapshots"]={c:s for c,s in current_stamps.items() if s}
+        meta.pop("last_snapshot",None)
         meta["last_check_epoch"]=now.timestamp();meta.pop("blocked_until_epoch",None)
         save_json(META_PATH,meta);return 0
     except RuntimeError as e:
