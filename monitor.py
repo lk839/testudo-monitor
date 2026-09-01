@@ -364,8 +364,12 @@ def main():
     now=datetime.now(tz);config=load_json(CONFIG_PATH,{})
     state=load_json(STATE_PATH,{});meta=load_json(META_PATH,{})
     due,interval=due_now(now,meta)
+    force_full_scan=os.getenv("FORCE_FULL_SCAN","false").strip().lower() in ("1","true","yes","on")
     print(f"Local time: {now.isoformat()}");print(f"Target interval: {interval} min")
-    if not due:print("Not due. Exiting without contacting Testudo.");return 0
+    if not due and not force_full_scan:
+        print("Not due. Exiting without contacting Testudo.");return 0
+    if force_full_scan and not due:
+        print("FORCE_FULL_SCAN enabled. Bypassing due-time check.")
     if now.timestamp()<float(meta.get("blocked_until_epoch",0)):
         print("Conservative pause still active. Exiting.");return 0
     sentinels=[c.upper() for c in config.get("sentinel_courses",
@@ -395,8 +399,6 @@ def main():
             c for c,stamp in current_stamps.items()
             if stamp and not last_stamps.get(c)
         ]
-
-        force_full_scan=os.getenv("FORCE_FULL_SCAN","false").strip().lower() in ("1","true","yes","on")
 
         if first:
             print("First run: establishing baseline.")
