@@ -281,6 +281,9 @@ def scan_all(config,state,rules,baseline=False):
     for i,item in enumerate(config["watch"]):
         course=item["course"].upper()
         _,found=parse_page(get_page(course_url(course)),course)
+        # IMPORTANT: optimizer may only use sections explicitly allowed by config.json.
+        allowed=sections_to_check(item,found)
+        found={sec:found[sec] for sec in allowed}
         catalog[course]=found
         if not found:print(f"WARNING: no sections parsed for {course}",file=sys.stderr)
         if i<len(config["watch"])-1:time.sleep(random.uniform(3,5))
