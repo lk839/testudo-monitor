@@ -119,7 +119,7 @@
   ],
   "fsoc_unknown_instructor_policy": "suppress",
   "schedule_score": {
-    "priority_weight": 10.0,
+    "priority_weight": 1.0,
     "campus_span_weight": 0.03,
     "gap_weight": 0.02,
     "early_start_weight": 0.015,
