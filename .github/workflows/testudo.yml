@@ -2,6 +2,12 @@ name: Testudo Seat Monitor
 
 on:
   workflow_dispatch:
+    inputs:
+      force_full_scan:
+        description: "Force full optimizer scan now"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -32,6 +38,7 @@ jobs:
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           TESTUDO_TERM: "202608"
+          FORCE_FULL_SCAN: ${{ inputs.force_full_scan }}
         run: python monitor.py
 
       - name: Save monitor state
