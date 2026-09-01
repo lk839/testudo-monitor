@@ -1,5 +1,4 @@
 {
-  "sentinel_course": "BSCI331",
   "watch": [
     {
       "course": "BSCI331",
@@ -91,5 +90,10 @@
         "0101"
       ]
     }
+  ],
+  "sentinel_courses": [
+    "BSCI331",
+    "COMM107",
+    "INAG110"
   ]
 }
