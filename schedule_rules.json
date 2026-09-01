@@ -1,7 +1,8 @@
 {
   "timezone": "America/New_York",
   "earliest_start": "09:30",
-  "latest_end": "19:15",
+  "latest_end": "15:50",
+  "target_credits": 16,
   "current_sections": {
     "CHEM231": "5423",
     "CHEM232": "5223",
@@ -9,6 +10,21 @@
     "COMM107": "4001",
     "ENES210": "0601",
     "INST155": "0101"
+  },
+  "course_credits": {
+    "CHEM231": 3,
+    "CHEM232": 1,
+    "BSCI207": 3,
+    "COMM107": 3,
+    "ENES210": 3,
+    "INST155": 3,
+    "BSCI331": 3,
+    "BIOM301": 3,
+    "COMM107C": 3,
+    "COMM200": 3,
+    "INAG110": 3,
+    "JOUR130": 3,
+    "THET285": 3
   },
   "current_meetings": {
     "CHEM231": [
@@ -60,78 +76,68 @@
         "end": "11:50"
       }
     ],
-    "ENES210": [
-      {
-        "days": [
-          "W"
-        ],
-        "start": "10:00",
-        "end": "10:50"
-      }
-    ],
+    "ENES210": [],
     "INST155": []
   },
   "priority": {
     "CHEM231": 100,
     "CHEM232": 95,
-    "BSCI222": 90,
     "BSCI207": 85,
     "BSCI331": 80,
-    "PHYS131": 75,
     "BIOM301": 70,
-    "FSPW": 65,
-    "STAT400": 60,
-    "COMM107": 55,
-    "GENED_DUAL": 50,
+    "FSOC": 55,
     "ENES210": 45,
     "INST155": 40
   },
   "course_groups": {
-    "ENGL390": "FSPW",
-    "ENGL391": "FSPW",
-    "ENGL392": "FSPW",
-    "ENGL393": "FSPW",
-    "ENGL394": "FSPW",
-    "ENGL395": "FSPW",
-    "ENGL398A": "FSPW",
-    "ENGL398B": "FSPW",
-    "ENGL398C": "FSPW",
-    "ENGL398E": "FSPW",
-    "ENGL398L": "FSPW",
-    "ENGL398N": "FSPW",
-    "ENGL398R": "FSPW",
-    "ENGL398V": "FSPW",
-    "ARCH230": "GENED_DUAL",
-    "AREC280": "GENED_DUAL",
-    "BMGT262": "GENED_DUAL",
-    "BMGT289B": "GENED_DUAL",
-    "BMGT289D": "GENED_DUAL",
-    "BMGT289E": "GENED_DUAL",
-    "BMGT289I": "GENED_DUAL",
-    "ENES240": "GENED_DUAL"
+    "COMM107": "FSOC",
+    "COMM107C": "FSOC",
+    "COMM200": "FSOC",
+    "INAG110": "FSOC",
+    "JOUR130": "FSOC",
+    "THET285": "FSOC"
   },
-  "replaceable_current": [
+  "fixed_courses": [
     "CHEM231",
     "CHEM232",
-    "BSCI207",
-    "COMM107",
     "ENES210",
     "INST155"
   ],
-  "same_slot_replacements": {
-    "GENED_DUAL": [
-      "ENES210"
-    ],
-    "FSPW": []
-  },
-  "notes": [
-    "Hard commute rule: no meeting before 09:30 and no meeting ending after 19:15.",
-    "A seat opening is suppressed if its own meeting times are impossible.",
-    "If it conflicts with current classes, it is alerted only when the conflict involves current classes that are allowed to move and the candidate has enough priority or replaces the same requirement slot.",
-    "This is an actionability filter, not an automatic registration system.",
-    "CHEM231 instructor preference: Stocker is preferred; routine non-Stocker CHEM231 openings are suppressed."
+  "academic_replacement_targets": [
+    "COMM107",
+    "BSCI207"
   ],
   "preferred_instructors": {
     "CHEM231": "Stocker"
-  }
+  },
+  "stocker_flexible_discussion": true,
+  "fsoc_current_course": "COMM107",
+  "fsoc_current_instructor": "KC",
+  "fsoc_workload_benchmark": "Lori Sefton / INAG110",
+  "fsoc_approved_easier_instructors": [
+    "Chelsea Mays-Williams"
+  ],
+  "fsoc_unknown_instructor_policy": "suppress",
+  "schedule_score": {
+    "priority_weight": 10.0,
+    "campus_span_weight": 0.03,
+    "gap_weight": 0.02,
+    "early_start_weight": 0.015,
+    "section_improvement_min": 2.0,
+    "nonstocker_chem231_min": 8.0,
+    "academic_swap_min": 5.0,
+    "fsoc_swap_min": 2.0
+  },
+  "notes": [
+    "Exactly 16 credits is a hard requirement.",
+    "No fixed meeting may start before 09:30 or end after 15:50.",
+    "CHEM231 and CHEM232 must remain together.",
+    "ENES210 and INST155 stay in the schedule and are treated as having no fixed meeting for conflict scoring.",
+    "BSCI331 and BIOM301 may replace one 3-credit current course, normally COMM107 or BSCI207, only when the resulting 16-credit schedule scores materially better.",
+    "BSCI222 and PHYS131 are intentionally not monitored because their 4-credit size cannot produce a sensible exact-16-credit swap under the current structure.",
+    "For Stocker CHEM231, a single-day discussion is ignored for hard conflict/scoring because another Stocker discussion may be attended if space exists. The official discussion is still shown in alerts.",
+    "A non-Stocker CHEM231 section must beat the current schedule by a much larger margin.",
+    "FSOC alternatives are monitored broadly but an alert is allowed only for instructors explicitly vetted as clearly easier/lower-workload than Lori Sefton in INAG110. Unknown instructors are suppressed until vetted.",
+    "Open seat alone never triggers an alert; the opening must create a materially better exact-16-credit schedule."
+  ]
 }
