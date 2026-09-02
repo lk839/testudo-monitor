@@ -57,7 +57,7 @@
   "CHEM231-5423": false,
   "CHEM231-5441": true,
   "CHEM231-5442": false,
-  "CHEM231-5443": false,
+  "CHEM231-5443": true,
   "CHEM231-SEF1": true,
   "CHEM232-5121": false,
   "CHEM232-5122": false,
@@ -161,7 +161,7 @@
   "COMM107-8301": false,
   "COMM107-8401": false,
   "COMM107-8501": false,
-  "COMM107-8601": false,
+  "COMM107-8601": true,
   "COMM107-8701": false,
   "COMM107-8801": false,
   "COMM107-8901": false,
@@ -537,5 +537,5 @@
   "STAT400-0511": false,
   "STAT400-0521": false,
   "STAT400-0531": false,
-  "THET285-0101": true
+  "THET285-0101": false
 }
