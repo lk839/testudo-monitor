@@ -494,7 +494,7 @@
   "INAG110-3801": false,
   "INAG110-3901": false,
   "INAG110-4001": false,
-  "JOUR130-0201": false,
+  "JOUR130-0201": true,
   "JOUR130-FC02": true,
   "JOUR130-FC03": false,
   "JOUR130-FC05": false,
